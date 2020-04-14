@@ -1,0 +1,151 @@
+.profile-header-icon {
+  cursor: pointer;
+  margin-right: 8px;
+  transition: 250ms linear;
+}
+
+.profile-header-icon:hover {
+  color: #01579b;
+}
+
+.profile-information {
+  align-items: center;
+  display: flex;
+  margin: 32px 64px;
+}
+
+.profile-information i {
+  padding: 0;
+}
+
+.profile-photo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: max-content;
+}
+
+.photo-placeholder {
+  border-radius: 100%;
+  height: 150px;
+  width: 150px;
+}
+
+.photo-placeholder {
+  background-size: contain;
+}
+
+.photo-placeholder .progress-indicator {
+  position: relative;
+  top: 35%;
+}
+
+.edit-profile-photo {
+  cursor: pointer;
+  margin: 8px auto;
+  width: max-content;
+}
+
+.file-picker {
+  height: 0.1px;
+  opacity: 0;
+  position: absolute;
+  width: 0.1px;
+}
+
+.edit-icon {
+  padding: 0;
+  transition: color 300ms linear;
+}
+
+.edit-icon:hover {
+  color: #01579b;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  margin-left: 48px;
+}
+
+.details {
+  margin: 20px 0;
+}
+
+.details .email {
+  color: rgba(0, 0, 0, 0.4);
+  margin-top: 2px;
+}
+
+.level .level-name {
+  color: #0277bd;
+  font-weight: bold;
+  margin: 6px 0;
+}
+
+.level .level-container::before,
+.level .level-container::after {
+  color: #0277bd;
+  font-family: 'Roboto Slab', sans-serif;
+  font-weight: bold;
+  height: auto;
+  position: relative;
+  vertical-align: 6px;
+  width: max-content;
+}
+
+.level .level-container::before {
+  content: attr(current-level);
+  left: 0;
+  margin-right: 6px;
+}
+
+.level .level-container::after {
+  content: attr(next-level);
+  margin-left: 6px;
+  right: 0;
+}
+
+@media screen and (max-width: 425px) {
+  .profile-information {
+    flex-direction: column;
+    margin: 0;
+    width: 100%;
+  }
+
+  .profile-photo {
+    justify-content: center;
+  }
+
+  .profile-details {
+    justify-content: center;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .details {
+    text-align: center;
+  }
+
+  .level {
+    margin: 0 auto;
+  }
+
+  .level p {
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .level .level-bar-container {
+    width: 200px;
+  }
+
+  .level .level-container svg, .level .level-bar-container {
+    width: 200px;
+  }
+
+  .level .level-bar-value {
+    width: 50px;
+  }
+}

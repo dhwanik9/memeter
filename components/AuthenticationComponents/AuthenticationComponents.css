@@ -1,0 +1,68 @@
+.authentication-form {
+  display: flex;
+  flex-direction: column;
+  margin: 32px auto;
+  width: 20%;
+}
+
+.authentication-form .password {
+  width: 75.7%;
+}
+
+.authentication-form .material-icons-outlined {
+  color: #0277bd;
+}
+
+.authentication-form .toggleVisibility {
+  cursor: pointer;
+  padding: 0 0 0 6px;
+  transition: color 300ms linear;
+}
+
+.authentication-form .toggleVisibility {
+  color: #01579b;
+}
+
+@media screen and (max-width: 1024px) {
+  .authentication-form {
+    width: calc(50% - 32px);
+  }
+
+  .authentication-form .password {
+    width: 86.4%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .authentication-form {
+    margin-bottom: 0;
+    width: calc(80% - 32px);
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .authentication {
+    padding: 20px 16px 0 16px;
+  }
+
+  .authentication-form {
+    margin-bottom: 0;
+    width: calc(100% - 32px);
+  }
+
+  .authentication-form .password {
+    width: 81.7%;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .authentication-form .password {
+    width: 79.3%;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .authentication-form .password {
+    width: 74.5%;
+  }
+}

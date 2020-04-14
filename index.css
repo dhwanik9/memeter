@@ -1,0 +1,261 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&family=Roboto:wght@400;500&display=swap');
+
+@keyframes rotateProgress {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn  {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+body {
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto Slab', sans-serif;
+  margin: 0;
+}
+
+sup {
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.material-icons-outlined {
+  padding-right: 6px;
+  vertical-align: -6px;
+}
+
+p, span, button {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+}
+
+a, a:visited, a:focus {
+  border-radius: 5px;
+  color: #0277bd;
+  font-family: 'Roboto Slab', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 0 12px;
+  text-decoration: none;
+  transition: color 300ms linear;
+}
+
+a:hover {
+  color: #01579b;
+}
+
+label {
+  color: #0277bd;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+input {
+  background-color: transparent;
+  border: none;
+  color: #01579b;
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  outline: none;
+  width: 86.2%;
+}
+
+form {
+  border-radius: 5px;
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  border-radius: 5px;
+  color: #0277bd;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-weight: bolder;
+  letter-spacing: 2px;
+  outline: 0;
+  padding: 8px;
+  text-transform: uppercase;
+  transition: 300ms linear;
+}
+
+button:hover {
+  color: #01579b;
+}
+
+button.filled {
+  background-color: #0277bd;
+  color: #fff;
+}
+
+button.filled:hover {
+  background-color: #01579b;
+}
+
+button:disabled, button.filled:disabled {
+  background-color: dimgray;
+  cursor: not-allowed;
+}
+
+.home .description {
+  margin: 8px auto 32px auto;
+  text-align: center;
+  width: 50%;
+}
+
+.input {
+  border: 2px solid #0277bd;
+  border-radius: 5px;
+  font-family: 'Roboto', sans-serif;
+  margin: 4px 0 20px 0;
+  outline: none;
+  padding: 4px 8px;
+  transition: border 300ms linear;
+}
+
+.input .material-icons-outlined {
+  color: #0277bd;
+  transition: color 300ms linear;
+}
+
+.input .material-icons-outlined:hover {
+  color: #01579b;
+}
+
+.input:hover {
+  border: 2px solid #01579b;
+}
+
+.header {
+  align-items: center;
+  color: #0277bd;
+  display: flex;
+  height: auto;
+  padding: 16px 24px;
+}
+
+.header-title {
+  flex-grow: 1;
+}
+
+.error {
+  border: 2px solid #c62828;
+}
+
+.error:hover {
+  border: 2px solid #b71c1c;
+}
+
+.authentication-form p {
+  color: #c62828;
+  display: block;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.input p {
+  display: none;
+}
+
+.input.error p {
+  display: block;
+  font-size: 10px;
+}
+
+.auth-error {
+  font-size: 12px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+span.error .material-icons-outlined {
+  color: #c62828;
+}
+
+.authentication, .home, .feed, .profile {
+  animation-duration: 250ms;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-in;
+  animation-name: fadeIn;
+  padding: 16px 16px 0 16px;
+}
+
+.title {
+  letter-spacing: 2px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.icon {
+  color: #0277bd;
+  font-size: 72px;
+  text-align: center;
+  width: 100%;
+}
+
+.progress-indicator svg {
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-name: rotateProgress;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  height: 30px;
+  left: calc(50% - 15px);
+  position: relative;
+  width: 30px;
+}
+
+@media screen and (max-width: 425px) {
+  .header {
+    display: block;
+    padding: 8px 12px;
+  }
+  .header-title, .title {
+    font-size: 24px;
+    padding: 0;
+    text-align: center;
+  }
+
+  .link-buttons {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 4px 0;
+  }
+
+  a, a:visited, a:focus {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .input.error p {
+    font-size: 9px;
+  }
+
+  .auth-error {
+    font-size: 11px;
+  }
+
+  .home .description {
+    font-size: 15px;
+    margin: 8px 8px 12px 8px;
+    width: calc(100% - 8px);
+  }
+}
