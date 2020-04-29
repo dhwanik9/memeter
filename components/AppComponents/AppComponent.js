@@ -10,7 +10,7 @@ const AppComponents = () => {
     <div className="app-components">
       <Redirect to="/" />
       <Route exact path="/" component={ Feed } />
-      <Route path="/profile" component={ Profile } />
+      <Route path="/profile/user/:id" component={ Profile } />
     </div>
   );
 };

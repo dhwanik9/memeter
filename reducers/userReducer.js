@@ -5,6 +5,7 @@ const initialState = {
   loading: false,
   result: {},
   authResult: {},
+  userProfile: null,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -49,6 +50,19 @@ const userReducer = (state = initialState, action) => {
         ...state,
         photoLoading: false,
         result: action.payload,
+      };
+
+    case actions.WAIT_FETCH_USER_PROFILE:
+      return {
+        ...state,
+        profileLoading: true
+      };
+
+    case actions.FETCH_USER_PROFILE:
+      return {
+        ...state,
+        userProfile: action.payload,
+        profileLoading: false,
       };
     default: return state;
   }

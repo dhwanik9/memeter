@@ -3,11 +3,11 @@ import React from "react";
 import Level from "./Level";
 import Details from "./Details";
 
-const ProfileDetails = () => {
+const ProfileDetails = ({ userProfile }) => {
   return (
     <div className="profile-details">
-      <Details />
-      <Level />
+      <Details userProfile={ userProfile } />
+      <Level userProfile={ userProfile } />
     </div>
   );
 };

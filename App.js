@@ -5,16 +5,16 @@ import { connect } from "react-redux";
 import {checkingAuthState} from "./actions/userAction";
 import AppComponents from "./components/AppComponents/AppComponent";
 import AuthenticationComponents from "./components/AuthenticationComponents/AuthenticationComponents";
-import ProgressIndicator from "./components/ProgressIndicator";
+import LoadingLogo from "./components/LoadingLogo";
 
-const App = ({ dispatch, result, loading, loggedIn }) => {
+const App = ({ dispatch, loading, loggedIn }) => {
 
   useEffect(() => {
     dispatch(checkingAuthState());
   }, [dispatch]);
 
   const renderUI = () => {
-    if(loading) return <ProgressIndicator />;
+    if(loading) return <LoadingLogo />;
     else if(loggedIn) return (
       <AppComponents />
     );
@@ -23,9 +23,16 @@ const App = ({ dispatch, result, loading, loggedIn }) => {
     )
   };
 
+  useEffect(() => {
+    const body = document.getElementsByTagName("body")[0];
+    const theme = localStorage.getItem("theme") ? localStorage.getItem("theme") : "light";
+    body.classList.toggle(theme)
+  }, []);
+
   return(
     <Router>
-      <div className="app">
+      <div
+        className="app">
         {
           renderUI()
         }
@@ -35,7 +42,6 @@ const App = ({ dispatch, result, loading, loggedIn }) => {
 };
 
 const mapStateToProps = (state) => ({
-  result: state.user.result,
   loading: state.user.loading,
   loggedIn: state.user.loggedIn,
 });

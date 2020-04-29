@@ -16,7 +16,7 @@ const Home = () => {
         among the top memers on Memeter.
       </p>
 
-      <h1 className="title">Why was memeter developed?</h1>
+      <h1 className="title">Why Memeter?</h1>
       <p className="description">
         There are dozens of apps where you upload memes, and the users
         like and comment on them. Some even pay you for making memes.

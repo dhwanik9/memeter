@@ -12,7 +12,7 @@ const Feed = () => {
       </div>
       <div className="feed-posts">
         <PostMeme/>
-        <Posts/>
+        <Posts showFooter={ true }/>
       </div>
     </div>
   );

@@ -11,10 +11,12 @@ const PostForm = ({ dispatch, result }) => {
   const [meme, setMeme] = useState(null);
   const [OGFile, setFile] = useState({});
   const [postRes, setPostRes] = useState({});
+  const [letterCount, setLetterCount] = useState(0);
 
   const handleTitleChange = (e) => {
     const { value } = e.target;
     setTitle(value);
+    setLetterCount(value.length);
   };
 
   const handleMemeChange = (e) => {
@@ -58,7 +60,7 @@ const PostForm = ({ dispatch, result }) => {
 
   const postMeme = async (e) => {
     e.preventDefault();
-    if(title.length > 0 && meme) {
+    if(title.length > 0 && meme && letterCount <= 45) {
       setPosting(!posting);
       const uploadedBy = {
         displayName: result.displayName,
@@ -72,6 +74,7 @@ const PostForm = ({ dispatch, result }) => {
         setTitle("");
         setFile({});
         setMeme(null);
+        setLetterCount(0);
         dispatch(startFetching());
       }
       setTimeout(() => {
@@ -90,15 +93,17 @@ const PostForm = ({ dispatch, result }) => {
         Title as funnier as the meme
       </label>
       <span className="input">
-        <i className="material-icons-outlined">
-          title
-        </i>
-        <input
-          type="text"
-          name="title"
-          value={ title }
-          className="post-title"
-          onChange={ handleTitleChange }/>
+        <span className="inner-input">
+          <input
+            type="text"
+            name="title"
+            value={ title }
+            className="post-title"
+            onChange={ handleTitleChange }/>
+          <span className={ [ "letter-count", letterCount > 45 ? "error" : "" ].join(" ") }>
+            { letterCount }/45
+          </span>
+        </span>
       </span>
       <label className="input input-meme">
         <input
@@ -122,7 +127,7 @@ const PostForm = ({ dispatch, result }) => {
           <ProgressIndicator/>
         ) : (
           <button className="post-meme-btn filled"
-            disabled={ title && meme ? false : true }
+            disabled={ !(title && meme && letterCount <= 45) }
             onClick={ postMeme }>
               Let 'em laugh
               <i className="material-icons-outlined">
@@ -136,8 +141,8 @@ const PostForm = ({ dispatch, result }) => {
           className={[
             "message", postRes.finishPosting ? "show" : "", postRes.resultSuccess ? "" : "error"
           ].join(" ")}>
-        { postRes.resultText }
-      </span>
+          { postRes.resultText }
+        </span>
       }
     </form>
   );

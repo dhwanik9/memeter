@@ -6,6 +6,8 @@ export const PROCEED_TO_APP = "PROCEED_TO_APP";
 export const PROCEED_TO_HOME = "PROCEED_TO_HOME";
 export const WAIT_CHANGE = "WAIT_CHANGE";
 export const CHANGE_PROFILE_PHOTO = "CHANGE_PROFILE_PHOTO";
+export const WAIT_FETCH_USER_PROFILE = "WAIT_FETCH_USER_PROFILE";
+export const FETCH_USER_PROFILE = "FETCH_USER_PROFILE";
 
 const wait = () => ({
   type: WAIT,
@@ -35,9 +37,17 @@ const changeProfilePhoto = (result) => ({
   payload: result,
 });
 
+const waitFetchUserProfile = () => ({
+  type: WAIT_FETCH_USER_PROFILE,
+});
+
+const fetchUserProfile = (user) => ({
+  type: FETCH_USER_PROFILE,
+  payload: user
+});
+
 export const registerUser = (credentials) => {
   return async dispatch => {
-    dispatch(wait());
     const result = await firebase.register(credentials);
     if(result.resultSuccess)
       dispatch(beginAuth(result));
@@ -100,5 +110,13 @@ export const removingAuth = () => {
     };
     await firebase.logOut();
     dispatch(proceedToHome(result));
+  };
+};
+
+export const fetchingUserProfile = (uid) => {
+  return async dispatch => {
+    dispatch(waitFetchUserProfile());
+    const user = await firebase.fetchUserProfile(uid);
+    dispatch(fetchUserProfile(user));
   };
 };

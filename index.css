@@ -18,8 +18,47 @@
   }
 }
 
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.25;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 body {
   margin: 0;
+  transition: background-color 300ms ease-in;
+}
+
+.loading-logo {
+  animation: blink 1000ms linear infinite;
+  font-family: "Roboto Slab", sans-serif;
+  font-size: 72px;
+  left: 50%;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.dark, .dark .post-form {
+  background-color: #212121;
+  color: #bdbdbd;
+}
+
+.dark .post-meme p {
+  color: #bdbdbd;
+}
+
+.dark .details .email {
+  color: #757575;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -70,10 +109,10 @@ input {
   background-color: transparent;
   border: none;
   color: #01579b;
+  flex-grow: 1;
   font-family: 'Roboto', sans-serif;
   font-weight: bold;
   outline: none;
-  width: 86.2%;
 }
 
 form {
@@ -124,11 +163,18 @@ button:disabled, button.filled:disabled {
 .input {
   border: 2px solid #0277bd;
   border-radius: 5px;
+  display: flex;
+  flex-direction: column;
   font-family: 'Roboto', sans-serif;
   margin: 4px 0 20px 0;
   outline: none;
   padding: 4px 8px;
   transition: border 300ms linear;
+}
+
+.inner-input {
+  align-items: center;
+  display: flex;
 }
 
 .input .material-icons-outlined {
@@ -154,6 +200,16 @@ button:disabled, button.filled:disabled {
 
 .header-title {
   flex-grow: 1;
+}
+
+.dark-mode-toggle {
+  cursor: pointer;
+  padding: 0;
+  transition: color 300ms linear;
+}
+
+.dark-mode-toggle:hover {
+  color: #01579b;
 }
 
 .error {
@@ -221,6 +277,11 @@ span.error .material-icons-outlined {
   left: calc(50% - 15px);
   position: relative;
   width: 30px;
+}
+
+.dark > .home,
+.dark > .authentication{
+  color: #bdbdbd;
 }
 
 @media screen and (max-width: 425px) {

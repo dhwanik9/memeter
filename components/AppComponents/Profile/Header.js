@@ -5,6 +5,7 @@ import {removingAuth} from "../../../actions/userAction";
 const Header = ({ logOut }) => {
   const logout = () => {
     logOut();
+    window.location.replace("/");
   };
 
   return(
@@ -15,10 +16,10 @@ const Header = ({ logOut }) => {
         arrow_back
       </i>
       <h1 className="header-title">
-        Memeter <sup>BETA</sup>
+        Profile
       </h1>
       <i
-        className="material-icons-outlined"
+        className="material-icons-outlined profile-header-icon logout-icon"
         onClick={ logout }>
         exit_to_app
       </i>

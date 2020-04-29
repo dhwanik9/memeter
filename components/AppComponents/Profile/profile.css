@@ -8,6 +8,11 @@
   color: #01579b;
 }
 
+.logout-icon {
+  margin: 0;
+  padding: 0;
+}
+
 .profile-information {
   align-items: center;
   display: flex;
@@ -26,6 +31,7 @@
 }
 
 .photo-placeholder {
+  border: 3px solid #0277bd;
   border-radius: 100%;
   height: 150px;
   width: 150px;
@@ -77,10 +83,27 @@
   margin-top: 2px;
 }
 
+.details .username .material-icons-outlined,
+.details .email .material-icons-outlined {
+  font-size: 24px;
+  vertical-align: -3px;
+}
+
+.details .email .material-icons-outlined {
+  font-size: 20px;
+
+  margin-right: 2px;
+  vertical-align: -6px;
+}
+
 .level .level-name {
   color: #0277bd;
   font-weight: bold;
   margin: 6px 0;
+}
+
+.level .level-name span {
+  font-family: "Roboto Slab", sans-serif;
 }
 
 .level .level-container::before,
@@ -104,6 +127,35 @@
   content: attr(next-level);
   margin-left: 6px;
   right: 0;
+}
+
+.profile-memes {
+  margin: 0 auto;
+  width: calc(40% - 32px);
+}
+
+.profile-memes h1 {
+  color: #0277bd;
+  text-align: center;
+}
+
+@media screen and (max-width: 1024px) {
+  .profile-memes {
+    width: calc(61% - 32px);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .profile-memes {
+    width: calc(68% - 32px);
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .profile-memes {
+    margin-top: 32px;
+    width: calc(75% - 32px);
+  }
 }
 
 @media screen and (max-width: 425px) {
@@ -133,6 +185,16 @@
 
   .level p {
     text-align: center;
+  }
+
+  .level .level-container {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  .profile-memes {
+    width: calc(98% - 32px);
   }
 }
 

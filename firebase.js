@@ -28,16 +28,32 @@ class Firebase {
   }
 
   register = async ({ username, email, password }) => {
+    let userData;
     try {
       await this.auth.createUserWithEmailAndPassword(email, password);
       const user = this.auth.currentUser;
       await user.updateProfile({
         displayName: username,
       });
+      userData = {
+        uid: user.uid,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        email: user.email,
+        memePoint: 0,
+        currentLevelNo: 1,
+        nextLevelNo: 2,
+        pointsToNextLevel: 30,
+        nextLeagueLevel: 11,
+        currentLeague: "Novice",
+        nextLeague: "Better Than A Novice",
+        posts: []
+      };
       this.authResult = {
         resultText: "Welcome aboard memer, we'll get you started in a bit!",
         resultSuccess: true,
       };
+      this.storeUserData(userData);
       return this.authResult;
     } catch(err) {
       if("auth/email-already-in-use") {
@@ -50,12 +66,10 @@ class Firebase {
     }
   };
 
-  storeUserData = async (uid) => {
+  storeUserData = async (user) => {
     try {
-      await this.db.collection("users").doc(uid)
-        .set({
-          rating: 0,
-        });
+      await this.db.collection("users").doc(user.uid)
+        .set(user);
       this.result = {
         resultText: "",
         resultSuccess: true,
@@ -102,6 +116,9 @@ class Firebase {
       await user.updateProfile({
         photoURL
       });
+      await this.db.collection("users").doc(uid).update({
+        photoURL
+      });
       return user;
     } catch(err) {
       console.log(err);
@@ -113,7 +130,7 @@ class Firebase {
   };
 
   postMeme = async (uploadedBy, id, title, file) => {
-    let result = {};
+    let result;
     try {
       await this.ref.child(`posts/${id}`).put(file);
       const postUrl = await this.ref.child(`posts/${id}`).getDownloadURL();
@@ -126,6 +143,9 @@ class Firebase {
         uploadedAt: Date.now(),
         comments: [],
         ratedBy: [],
+      });
+      await this.db.collection("users").doc(uploadedBy.uid).update({
+        posts: firestore.FieldValue.arrayUnion(id)
       });
       result = {
         resultText: "That's what memers do, they make people laugh! HAHA",
@@ -143,28 +163,143 @@ class Firebase {
     }
   };
 
-  fetchPosts = async () => {
+  fetchPosts = async (uid) => {
     let result = [];
     try {
-      const snapshot = await this.db.collection("posts").orderBy("uploadedAt", "desc").get();
-      snapshot.forEach(doc => {
-        result.push(doc.data())
-      });
+      if(!uid) {
+        const memes = await this.db.collection("posts").orderBy("uploadedAt", "desc").get();
+        memes.forEach(meme => {
+          result.push(meme.data());
+        });
+        return result
+      } else {
+        let posts = (await this.db.collection("users").doc(uid).get()).data();
+        posts = posts.posts;
+        for (const p of posts) {
+          const post = await this.db.collection("posts").doc(p).get();
+          result.push(post.data());
+        }
+      }
       return result;
     } catch(err) {
       console.log(err);
     }
   };
 
-  rateMeme = async (rating, id) => {
+  chooseNextLevelPoints = (level, currentPoints) => {
+    switch(level) {
+      case 11:
+        return 30 + (currentPoints - (currentPoints % 10));
+      case 21:
+        return 50 + (currentPoints - (currentPoints % 10));
+      case 31:
+        return 70 + (currentPoints - (currentPoints % 10));
+      case 41:
+        return 90 + (currentPoints - (currentPoints % 10));
+      case level >= 61:
+        return 100 + (currentPoints - (currentPoints % 10));
+      default:
+        return 30
+    }
+  };
+
+  chooseCurrentLeague = (level) => {
+    switch(level) {
+      case 11:
+        return "Better Than A Novice";
+      case 21:
+        return "Intermediate";
+      case 31:
+        return "Better Than An Intermediate";
+      case 41:
+        return "Classic";
+      case level >= 61:
+        return "Beyond Classic";
+      default:
+        return "";
+    }
+  };
+
+  chooseNextLeague = (level) => {
+    switch(level) {
+      case 21:
+        return "Intermediate";
+      case 31:
+        return "Better Than An Intermediate";
+      case 41:
+        return "Classic";
+      case level >= 61:
+        return "Beyond Classic";
+      default:
+        return "";
+    }
+  };
+
+  rateMeme = async (rating, id, currentTotalRatings, uid) => {
     try {
       await this.db.collection("posts").doc(id).update({
-        ratedBy: firestore.FieldValue.arrayUnion(rating)
-      })
+        ratedBy: firestore.FieldValue.arrayUnion(rating),
+        totalRatings: currentTotalRatings + rating.ratingValue
+      });
+
+      const user = (await this.db.collection("users").doc(uid).get()).data();
+      await this.db.collection("users").doc(uid).update({
+        memePoint: user.memePoint + rating.ratingValue,
+        currentLevelNo: (user.memePoint + rating.ratingValue) >= user.pointsToNextLevel ? user.currentLevelNo + 1 : user.currentLevelNo,
+        nextLevelNo: (user.memePoint + rating.ratingValue) >= user.pointsToNextLevel ? user.nextLevelNo + 1 : user.nextLevelNo,
+        pointsToNextLevel: (user.memePoint + rating.ratingValue) >= user.pointsToNextLevel ? this.chooseNextLevelPoints(user.nextLeagueLevel, user.memePoint + rating.ratingValue) : user.pointsToNextLevel,
+        nextLeagueLevel: (user.memePoint + rating.ratingValue) >= user.pointsToNextLevel && (user.currentLevelNo + 1) >= user.nextLeagueLevel ? user.nextLeagueLevel + 10 : user.nextLeagueLevel,
+        currentLeague: (user.memePoint + rating.ratingValue) >= user.pointsToNextLevel && (user.currentLevelNo + 1) >= user.nextLeagueLevel ? this.chooseCurrentLeague(user.currentLevelNo + 1) : user.currentLeague,
+        nextLeague: (user.memePoint + rating.ratingValue) >= user.pointsToNextLevel && (user.currentLevelNo + 1) >= user.nextLeagueLevel ? this.chooseNextLeague(user.nextLeagueLevel + 10) : user.nextLeague
+      }).then(async () => {
+        if((user.memePoint + rating.ratingValue) >= user.pointsToNextLevel) {
+          await this.db.collection("users").doc(uid).update({
+            memePoint: 0,
+          });
+        }
+      });
     } catch(err) {
       console.log(err);
     }
-  }
+  };
+
+  addComment = async (comment, id) => {
+    try {
+      await this.db.collection("posts").doc(id).update({
+        comments: firestore.FieldValue.arrayUnion(comment)
+      });
+    } catch(err) {
+      console.log(err);
+    }
+  };
+
+  deleteComment = async (comment, id) => {
+    try {
+      await this.db.collection("posts").doc(id).update({
+        comments: firestore.FieldValue.arrayRemove(comment)
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  fetchUserProfile = async (uid) => {
+    try {
+      const user = await this.db.collection("users").doc(uid).get();
+      return user.data();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  deleteMeme = async (id) => {
+    try {
+      await this.db.collection("posts").doc(id).delete();
+      await this.ref.child(`posts/${id}`).delete();
+    } catch(err) {
+      console.log(err);
+    }
+  };
 }
 
 export default new Firebase();

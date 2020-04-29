@@ -17,8 +17,8 @@ const LoginForm = ({ dispatch, authResult, loading }) => {
 
   const performValidation = (e, formValid) => {
     !formValid ?
-      e.target.parentElement.classList.add("error") :
-      e.target.parentElement.classList.remove("error");
+      e.target.parentElement.parentElement.classList.add("error") :
+      e.target.parentElement.parentElement.classList.remove("error");
     return formValid;
   };
 
@@ -65,16 +65,18 @@ const LoginForm = ({ dispatch, authResult, loading }) => {
     <form className="authentication-form" onSubmit={ (e) => e.preventDefault() }>
       <label htmlFor="email">Email</label>
       <span className="input">
-        <i className="material-icons-outlined">
-          alternate_email
-        </i>
-        <input
-          type="text"
-          name="email"
-          className="email"
-          value={ formData.email }
-          onChange={ handleChange }
-        />
+        <span className="inner-input">
+          <i className="material-icons-outlined">
+            alternate_email
+          </i>
+          <input
+            type="text"
+            name="email"
+            className="email"
+            value={ formData.email }
+            onChange={ handleChange }
+          />
+        </span>
         <p className="errorText">
           {
             !errors.validEmail ?
@@ -86,22 +88,24 @@ const LoginForm = ({ dispatch, authResult, loading }) => {
 
       <label htmlFor="password">Password</label>
       <span className="input">
-        <i className="material-icons-outlined">
-          lock
-        </i>
-        <input
-          type={ showPassword ? "text" : "password" }
-          name="password"
-          className="password"
-          value={ formData.password }
-          onChange={ handleChange }
-        />
-        <i
-          className="material-icons-outlined toggleVisibility"
-          onClick={ togglePasswordVisibility }
-        >
-          { showPassword ? "visibility_off" : "visibility" }
-        </i>
+        <span className="inner-input">
+          <i className="material-icons-outlined">
+            lock
+          </i>
+          <input
+            type={ showPassword ? "text" : "password" }
+            name="password"
+            className="password"
+            value={ formData.password }
+            onChange={ handleChange }
+          />
+          <i
+            className="material-icons-outlined toggleVisibility"
+            onClick={ togglePasswordVisibility }
+          >
+            { showPassword ? "visibility_off" : "visibility" }
+          </i>
+        </span>
         <p className="errorText">
           {
             !errors.validPassword ?

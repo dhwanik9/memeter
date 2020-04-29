@@ -12,11 +12,11 @@ const onFetch = (result) => ({
   payload: result
 });
 
-export const startFetching = () => {
+export const startFetching = (uid) => {
   return async dispatch => {
     dispatch(beginFetch());
     try {
-      const result = await firebase.fetchPosts();
+      const result = await firebase.fetchPosts(uid);
       dispatch(onFetch(result));
     } catch(err) {
       console.log(err);

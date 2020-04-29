@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import ProgressIndicator from "../../ProgressIndicator";
 import {changingProfilePhoto} from "../../../actions/userAction";
 
-const ProfilePhoto = ({ dispatch, result, photoLoading }) => {
+const ProfilePhoto = ({ dispatch, userProfile, photoLoading, result }) => {
   const [changeState, setChangeState] = useState({
     error: false,
     errorText: "",
@@ -35,7 +35,7 @@ const ProfilePhoto = ({ dispatch, result, photoLoading }) => {
       <div
         className="photo-placeholder"
         style={{
-          backgroundImage: result.photoURL ? `url(${result.photoURL})` : `#b3e5fc`,
+          backgroundImage: userProfile.photoURL ? `url(${userProfile.photoURL})` : "#b3e5fc",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center center",
@@ -44,16 +44,22 @@ const ProfilePhoto = ({ dispatch, result, photoLoading }) => {
           photoLoading ? <ProgressIndicator/> : <></>
         }
       </div>
-      <label className="edit-profile-photo">
-        <input
-          type="file"
-          className="file-picker"
-          onChange={ changeProfilePhoto }/>
+      {
+        userProfile.uid === result.uid ? (
+          <label className="edit-profile-photo">
+            <input
+              type="file"
+              className="file-picker"
+              onChange={ changeProfilePhoto }/>
 
-          <i className="material-icons-outlined edit-icon">
-            add_a_photo
-          </i>
-      </label>
+            <i className="material-icons-outlined edit-icon">
+              add_a_photo
+            </i>
+          </label>
+        ) : (
+          <></>
+        )
+      }
       <span className={["message error", changeState.error ? "show" : ""].join(" ")}>
         { changeState.errorText }
       </span>
@@ -64,6 +70,7 @@ const ProfilePhoto = ({ dispatch, result, photoLoading }) => {
 const mapStateToProps = (state) => ({
   result: state.user.result,
   photoLoading: state.user.photoLoading,
+  userProfile: state.user.userProfile,
 });
 
 export default connect(mapStateToProps)(ProfilePhoto);

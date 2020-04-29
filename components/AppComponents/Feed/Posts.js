@@ -3,15 +3,29 @@ import { connect } from "react-redux";
 import PostCard from "./PostCard";
 import { startFetching } from '../../../actions/postsAction'
 
-const Posts = ({ fetchPosts, posts, result }) => {
+const Posts = ({ dispatch, posts, result, showFooter, uid }) => {
   useEffect(() => {
-    fetchPosts();
-  }, [fetchPosts]);
+    if(!uid) {
+      dispatch(startFetching());
+    }
+    else {
+      dispatch(startFetching(uid));
+    }
+  }, [dispatch, uid]);
   return (
     <div className="posts">
       {
-        posts.map(post =>
-          <PostCard key={ post.id } post={ post } result={ result } fetchPosts={ fetchPosts } />
+        posts.length > 0 ? (
+          posts.map(post =>
+            <PostCard
+              key={post.id}
+              post={post}
+              result={result}
+              showFooter={showFooter}
+            />
+          )
+        ) : (
+          <h4>It's so void here...</h4>
         )
       }
     </div>
@@ -23,8 +37,4 @@ const mapStateToProps = (state) => ({
   result: state.user.result,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  fetchPosts: () => dispatch(startFetching())
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Posts);
+export default connect(mapStateToProps)(Posts);
