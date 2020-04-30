@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import { connect } from 'react-redux';
 import ProgressIndicator from "../ProgressIndicator";
 import {loginUser} from "../../actions/userAction";
+import {Link} from "react-router-dom";
 
 const LoginForm = ({ dispatch, authResult, loading }) => {
   const [formData, setFormData] = useState({
@@ -130,6 +131,9 @@ const LoginForm = ({ dispatch, authResult, loading }) => {
           </p>) :
           (<></>)
       }
+      <Link to="/resetPassword" className="forget-password-link">
+        Forgot the password?
+      </Link>
     </form>
   )
 };

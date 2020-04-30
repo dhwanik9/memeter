@@ -152,9 +152,14 @@
   width: 100%;
 }
 
-.posts h4 {
+.posts h4.empty-posts-title {
   margin-top: 16px;
   text-align: center;
+}
+
+.posts .memes-loading {
+  display: block;
+  margin-top: 16px;
 }
 
 .post-card {

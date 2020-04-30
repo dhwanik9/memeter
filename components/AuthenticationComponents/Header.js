@@ -19,7 +19,7 @@ const Header = () => {
   return(
     <div className="header">
       <h1 className="header-title">
-        Memeter <sup>2020.4</sup>
+        Memeter <sup>2020.4.1</sup>
       </h1>
       <div className="link-buttons">
         <NavLink

@@ -2,9 +2,8 @@ import React from "react";
 import firebase from "../../../firebase";
 import {Link} from "react-router-dom";
 import {startFetching} from "../../../actions/postsAction";
-import {connect} from "react-redux";
 
-const Post = ({ post, result, fetchPosts, setShowComments, showComments }) => {
+const Post = ({ dispatch, post, result, setShowComments, showComments, uid }) => {
   const uploadedAtDateTime = new Date(post.uploadedAt);
   const currentDateTime = new Date();
   const elapsedMinutes = Math.floor((currentDateTime - uploadedAtDateTime) / (1000 * 60));
@@ -13,6 +12,8 @@ const Post = ({ post, result, fetchPosts, setShowComments, showComments }) => {
   const elapsedMonths = Math.floor(elapsedDays / 30);
   const elapsedYears = Math.floor(elapsedMonths / 12);
   const [isRating, setIsRating] = React.useState(false);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [postState, setPostState] = React.useState(post);
   const ratingBarEmojis = [
     {
       emoji: "🤦‍♂",
@@ -81,13 +82,13 @@ const Post = ({ post, result, fetchPosts, setShowComments, showComments }) => {
   };
 
   const renderRatingBarUI = () => {
-    if(result.uid === post.uploadedBy.uid) {
+    if(result.uid === postState.uploadedBy.uid) {
       return  <h4 className="rating-bar">We won't let you rate your own post!</h4>
-    } else if(post.ratedBy.length > 0) {
+    } else if(postState.ratedBy.length > 0) {
       let comp = null;
-      for(let i = 0; i < post.ratedBy.length; i++) {
-        if(result.uid === post.ratedBy[i].uid) {
-          comp = <span className="rating-emoji">{ post.ratedBy[i].ratingEmoji + " " + post.ratedBy[i].ratingTitle }</span>;
+      for(let i = 0; i < postState.ratedBy.length; i++) {
+        if(result.uid === postState.ratedBy[i].uid) {
+          comp = <span className="rating-emoji">{ postState.ratedBy[i].ratingEmoji + " " + postState.ratedBy[i].ratingTitle }</span>;
           break;
         } else {
           comp = ratingBarEmojis.map(emoji => (
@@ -124,22 +125,25 @@ const Post = ({ post, result, fetchPosts, setShowComments, showComments }) => {
       ratingEmoji: emoji.emoji,
       ratingTitle: emoji.title,
     };
-    await firebase.rateMeme(rating, post.id, post.totalRatings, post.uploadedBy.uid);
-    fetchPosts();
+    setPostState(await firebase.rateMeme(rating, postState.id, postState.totalRatings, postState.uploadedBy.uid));
     setIsRating(false);
   };
 
   const deleteMeme = async () => {
-    await firebase.deleteMeme(post.id);
-    fetchPosts();
+    setIsDeleting(true);
+    await firebase.deleteMeme(postState.id, result.uid);
+    dispatch(startFetching(uid));
+    setIsDeleting(false);
   };
 
   return (
-    <div className="post">
+    <div
+      className="post"
+      style={{ opacity: isDeleting ? 0.5 : 1 }}>
       <div className="post-header">
         {
-          post.uploadedBy.photoURL ? (
-            <img src={ post.uploadedBy.photoURL } alt={ post.uploadedBy.displayName } />
+          postState.uploadedBy.photoURL ? (
+            <img src={ postState.uploadedBy.photoURL } alt={ postState.uploadedBy.displayName } />
           ) : (
             <i className="material-icons-outlined">
               account_circle
@@ -147,15 +151,15 @@ const Post = ({ post, result, fetchPosts, setShowComments, showComments }) => {
           )
         }
         <h5>
-          <Link to={`/profile/user/${post.uploadedBy.uid}`}>
-            { post.uploadedBy.displayName }
+          <Link to={`/profile/user/${postState.uploadedBy.uid}`}>
+            { postState.uploadedBy.displayName }
           </Link>
         </h5>
         {
           renderTimeStampUI()
         }
         {
-          post.uploadedBy.uid === result.uid ? (
+          postState.uploadedBy.uid === result.uid ? (
             <span
               className="delete-meme"
               onClick={ deleteMeme }>
@@ -169,13 +173,13 @@ const Post = ({ post, result, fetchPosts, setShowComments, showComments }) => {
         }
       </div>
       <div className="post-content">
-        <p>{ post.title }</p>
-        <img src={ post.postUrl } alt="Post" />
+        <p>{ postState.title }</p>
+        <img src={ postState.postUrl } alt="Post" />
       </div>
         <div className="post-footer">
           <div className="rating-bar">
             <span className="total-ratings">
-              { post.totalRatings }
+              { postState.totalRatings }
             </span>
             {
               !isRating ? (
@@ -193,8 +197,4 @@ const Post = ({ post, result, fetchPosts, setShowComments, showComments }) => {
   )
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  fetchPosts: () => dispatch(startFetching())
-});
-
-export default connect(null, mapDispatchToProps)(Post);
+export default Post;

@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import Post from "./Post";
 import Comments from "./Comments";
 
-const PostCard = ({ post, result, showFooter }) => {
+const PostCard = ({ dispatch, post, result, showFooter, uid }) => {
   const [showComments, setShowComments] = useState(false);
 
   return (
@@ -15,6 +15,8 @@ const PostCard = ({ post, result, showFooter }) => {
             setShowComments={ setShowComments }
             result={ result }
             showFooter={ showFooter }
+            uid={ uid }
+            dispatch={ dispatch }
           />
         ) : (
           <Comments

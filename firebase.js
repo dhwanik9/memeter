@@ -108,6 +108,24 @@ class Firebase {
     }
   };
 
+  resetPassword = async (email) => {
+    let result = {};
+    try {
+      await this.auth.sendPasswordResetEmail(email);
+      result = {
+        resultText: `Your password reset link has been sent to ${ email }.`,
+        sendResult: true,
+      };
+      return result;
+    } catch(err) {
+      result = {
+        resultText: `We messed something up, try again, don't be lazy.`,
+        sendResult: true,
+      };
+      return result;
+    }
+  };
+
   changeProfilePhoto = async (file, uid) => {
     try {
       const user = await this.auth.currentUser;
@@ -242,6 +260,8 @@ class Firebase {
         totalRatings: currentTotalRatings + rating.ratingValue
       });
 
+      const post = (await this.db.collection("posts").doc(id).get()).data();
+
       const user = (await this.db.collection("users").doc(uid).get()).data();
       await this.db.collection("users").doc(uid).update({
         memePoint: user.memePoint + rating.ratingValue,
@@ -258,6 +278,8 @@ class Firebase {
           });
         }
       });
+
+      return post;
     } catch(err) {
       console.log(err);
     }
@@ -292,9 +314,12 @@ class Firebase {
     }
   };
 
-  deleteMeme = async (id) => {
+  deleteMeme = async (id, uid) => {
     try {
       await this.db.collection("posts").doc(id).delete();
+      await this.db.collection("users").doc(uid).update({
+        posts: firestore.FieldValue.arrayRemove(id)
+      });
       await this.ref.child(`posts/${id}`).delete();
     } catch(err) {
       console.log(err);

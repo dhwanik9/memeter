@@ -2,31 +2,43 @@ import React, {useEffect} from 'react';
 import { connect } from "react-redux";
 import PostCard from "./PostCard";
 import { startFetching } from '../../../actions/postsAction'
+import ProgressIndicator from "../../ProgressIndicator";
 
-const Posts = ({ dispatch, posts, result, showFooter, uid }) => {
+const Posts = ({ dispatch, posts, result, showFooter, uid, loading }) => {
   useEffect(() => {
-    if(!uid) {
+    if (!uid) {
       dispatch(startFetching());
-    }
-    else {
+    } else {
       dispatch(startFetching(uid));
     }
   }, [dispatch, uid]);
+
+  const renderMemeUI = () => {
+    if(loading) {
+      return <span className="memes-loading">
+        <ProgressIndicator/>
+      </span>
+    }
+    else if(posts.length > 0) {
+      return posts.map(post =>
+        <PostCard
+          key={post.id}
+          post={post}
+          result={result}
+          showFooter={showFooter}
+          uid={ uid }
+          dispatch={ dispatch }
+        />
+      )
+    } else {
+      return <h4 className="empty-posts-title">It's so void here...</h4>
+    }
+  };
+
   return (
     <div className="posts">
       {
-        posts.length > 0 ? (
-          posts.map(post =>
-            <PostCard
-              key={post.id}
-              post={post}
-              result={result}
-              showFooter={showFooter}
-            />
-          )
-        ) : (
-          <h4>It's so void here...</h4>
-        )
+        renderMemeUI()
       }
     </div>
   );
@@ -34,7 +46,8 @@ const Posts = ({ dispatch, posts, result, showFooter, uid }) => {
 
 const mapStateToProps = (state) => ({
   posts: state.posts.posts,
-  result: state.user.result,
+  loading: state.posts.loading,
+  result: state.user.result
 });
 
 export default connect(mapStateToProps)(Posts);
