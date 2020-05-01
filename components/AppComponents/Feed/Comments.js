@@ -1,15 +1,14 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { v1 as uuidv1 } from "uuid";
 import firebase from "../../../firebase";
 import ProgressIndicator from "../../ProgressIndicator";
 import {Link} from "react-router-dom";
-import {startFetching} from "../../../actions/postsAction";
-import {connect} from "react-redux";
 
-const Comments = ({ comments, showComments, setShowComments, result, postId, fetchPosts, postUploadedByUid, showFooter }) => {
+const Comments = ({ comments, showComments, setShowComments, result, postId, postUploadedByUid, showFooter }) => {
   const [comment, setComment] = useState("");
   const [adding, setAdding] = useState(false);
   const [letterCount, setLetterCount] = useState(0);
+  const [commentsState, setCommentsState] = useState(comments);
 
   const handleChange = (e) => {
     setComment(e.target.value);
@@ -21,26 +20,32 @@ const Comments = ({ comments, showComments, setShowComments, result, postId, fet
       setAdding(true);
       const commentData = {
         displayName: result.displayName,
-        photoURL: result.photoURL,
         uid: result.uid,
         comment,
         id: uuidv1(),
         commentedAt: Date.now()
       };
-      await firebase.addComment(commentData, postId);
-      fetchPosts();
+      const comments = await firebase.addComment(commentData, postId);
+      setCommentsState(comments);
       setAdding(false);
       setComment("");
       setLetterCount(0);
     }
   };
 
+  const deleteComment = async (commentData) => {
+    console.log(commentData);
+    const comments = await firebase.deleteComment(commentData, postId);
+    console.log(comments);
+    setCommentsState(comments)
+  };
+
   return (
     <div className="comments">
-      <div className={ ["comments-header", !comments.length > 0 ? "empty" : ""].join(" ") }>
+      <div className={ ["comments-header", !commentsState.length > 0 ? "empty" : ""].join(" ") }>
         <h4>Comments</h4>
         <span>
-          { comments.length }
+          { commentsState.length }
         </span>
         <span onClick={ () => setShowComments(!showComments) }>
           <i className="material-icons-outlined close">clear</i>
@@ -48,7 +53,7 @@ const Comments = ({ comments, showComments, setShowComments, result, postId, fet
       </div>
       <div className="comments-content">
         {
-          !comments.length > 0 ? (
+          !commentsState.length > 0 ? (
             <span>
               {
                 !showFooter ?
@@ -57,14 +62,14 @@ const Comments = ({ comments, showComments, setShowComments, result, postId, fet
               }
             </span>
           ) : (
-            comments.map(comment => (
+            commentsState.map(comment => (
               <Comment
                 key={ comment.id }
                 comment={ comment }
                 result={ result }
                 postUploadedByUid={ postUploadedByUid }
                 postId={ postId }
-                fetchPosts={ fetchPosts }
+                deleteComment={ deleteComment }
               />
             ))
           )
@@ -102,7 +107,7 @@ const Comments = ({ comments, showComments, setShowComments, result, postId, fet
   );
 };
 
-const Comment = ({ comment, result, postUploadedByUid, postId, fetchPosts }) => {
+const Comment = ({ comment, result, postUploadedByUid, deleteComment }) => {
   const uploadedAtDateTime = new Date(comment.commentedAt);
   const currentDateTime = new Date();
   const elapsedMinutes = Math.floor((currentDateTime - uploadedAtDateTime) / (1000 * 60));
@@ -110,6 +115,7 @@ const Comment = ({ comment, result, postUploadedByUid, postId, fetchPosts }) => 
   const elapsedDays = Math.floor(elapsedHours / 24);
   const elapsedMonths = Math.floor(elapsedDays / 30);
   const elapsedYears = Math.floor(elapsedMonths / 12);
+  const [commentState, setCommentState] = useState(comment);
 
   const renderTimeStampUI = () => {
     if(elapsedYears >= 1) {
@@ -145,16 +151,24 @@ const Comment = ({ comment, result, postUploadedByUid, postId, fetchPosts }) => 
     }
   };
 
-  const deleteComment = async () => {
-    await firebase.deleteComment(comment, postId);
-    fetchPosts();
-  };
+  useEffect(() => {
+    async function fetchUser(uid) {
+      const user = await firebase.fetchUserProfile(uid);
+      setCommentState(prevState => ({
+        ...prevState,
+        uid: user.uid,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+      }));
+    }
+    fetchUser(commentState.uid);
+  }, [commentState.uid]);
 
   return (
     <div className="comment">
       {
-        comment.photoURL ? (
-          <img src={ comment.photoURL } alt={ comment.displayName } />
+        commentState.photoURL ? (
+          <img src={ commentState.photoURL } alt={ commentState.displayName } />
         ) : (
           <i className="material-icons-outlined profile-placeholder">
             account_circle
@@ -163,13 +177,15 @@ const Comment = ({ comment, result, postUploadedByUid, postId, fetchPosts }) => 
       }
       <span>
         <p className="comment-header">
-          <Link to={`/profile/user/${ comment.uid }`}>
-            { comment.displayName }
+          <Link to={`/profile/user/${ commentState.uid }`}>
+            { commentState.displayName }
           </Link>
           { renderTimeStampUI() }
           {
-            comment.uid === result.uid || postUploadedByUid === result.uid ? (
-              <i className="material-icons-outlined delete-icon" onClick={ deleteComment }>
+            commentState.uid === result.uid || postUploadedByUid === result.uid ? (
+              <i
+                className="material-icons-outlined delete-icon"
+                onClick={ () => deleteComment(commentState) }>
                 delete
               </i>
             ) : (
@@ -178,16 +194,11 @@ const Comment = ({ comment, result, postUploadedByUid, postId, fetchPosts }) => 
           }
         </p>
         <p className="comment">
-          { comment.comment }
+          { commentState.comment }
         </p>
       </span>
     </div>
   );
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  fetchPosts: () => dispatch(startFetching())
-});
-
-
-export default connect(null, mapDispatchToProps)(Comments);
+export default Comments;

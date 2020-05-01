@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import firebase from "../../../firebase";
 import {Link} from "react-router-dom";
 import {startFetching} from "../../../actions/postsAction";
@@ -12,7 +12,6 @@ const Post = ({ dispatch, post, result, setShowComments, showComments, uid }) =>
   const elapsedMonths = Math.floor(elapsedDays / 30);
   const elapsedYears = Math.floor(elapsedMonths / 12);
   const [isRating, setIsRating] = React.useState(false);
-  const [isDeleting, setIsDeleting] = React.useState(false);
   const [postState, setPostState] = React.useState(post);
   const ratingBarEmojis = [
     {
@@ -41,6 +40,17 @@ const Post = ({ dispatch, post, result, setShowComments, showComments, uid }) =>
       value: 10,
     },
   ];
+
+  useEffect(() => {
+    async function fetchUser(uid) {
+      const user = await firebase.fetchUserProfile(uid);
+      setPostState(prevState => ({
+        ...prevState,
+        uploadedBy: user
+      }));
+    }
+    fetchUser(post.uploadedBy.uid);
+  }, [post.uploadedBy.uid]);
 
   const renderTimeStampUI = () => {
     if(elapsedYears >= 1) {
@@ -125,21 +135,22 @@ const Post = ({ dispatch, post, result, setShowComments, showComments, uid }) =>
       ratingEmoji: emoji.emoji,
       ratingTitle: emoji.title,
     };
-    setPostState(await firebase.rateMeme(rating, postState.id, postState.totalRatings, postState.uploadedBy.uid));
+    const ratingData = await firebase.rateMeme(rating, postState.id, postState.totalRatings, postState.uploadedBy.uid);
+    setPostState(prevState => ({
+      ...prevState,
+        ratedBy: ratingData.ratedBy,
+        totalRatings: ratingData.totalRatings,
+    }));
     setIsRating(false);
   };
 
   const deleteMeme = async () => {
-    setIsDeleting(true);
     await firebase.deleteMeme(postState.id, result.uid);
     dispatch(startFetching(uid));
-    setIsDeleting(false);
   };
 
   return (
-    <div
-      className="post"
-      style={{ opacity: isDeleting ? 0.5 : 1 }}>
+    <div className="post">
       <div className="post-header">
         {
           postState.uploadedBy.photoURL ? (

@@ -64,7 +64,6 @@ const PostForm = ({ dispatch, result }) => {
       setPosting(!posting);
       const uploadedBy = {
         displayName: result.displayName,
-        photoURL: result.photoURL,
         uid: result.uid
       };
       const res = await firebase.postMeme(uploadedBy, uuidv1(), title, OGFile);

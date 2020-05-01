@@ -19,7 +19,7 @@ const Header = ({ result }) => {
   return(
     <div className="header">
       <h1 className="header-title">
-        Memeter <sup>2020.4.1</sup>
+        Memeter <sup>2020.5.1</sup>
       </h1>
       <div className="link-buttons">
         <NavLink
@@ -40,7 +40,7 @@ const Header = ({ result }) => {
           className="dark-mode-toggle"
           onClick={ toggleTheme }>
           <i className="material-icons-outlined dark-mode-toggle">
-            brightness_5
+            tonality
           </i>
         </span>
       </div>

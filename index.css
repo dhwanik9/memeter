@@ -156,7 +156,7 @@ button:disabled, button.filled:disabled {
 
 .home .description {
   margin: 8px auto 32px auto;
-  text-align: center;
+  text-align: justify;
   width: 50%;
 }
 
@@ -260,6 +260,24 @@ span.error .material-icons-outlined {
   text-transform: uppercase;
 }
 
+.home ul {
+  margin: 8px auto;
+  padding: 0;
+  width: 50%;
+}
+
+.home ul li {
+  font-family: 'Roboto', sans-serif;
+  margin: 6px 0;
+  text-align: justify;
+  width: 100%;
+}
+
+ul.rating-description li {
+  list-style-type: none;
+  text-align: center;
+}
+
 .icon {
   color: #0277bd;
   font-size: 72px;
@@ -318,5 +336,9 @@ span.error .material-icons-outlined {
     font-size: 15px;
     margin: 8px 8px 12px 8px;
     width: calc(100% - 8px);
+  }
+
+  .home ul {
+    width: 90%;
   }
 }
