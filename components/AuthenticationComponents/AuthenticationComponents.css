@@ -5,6 +5,10 @@
   width: 20%;
 }
 
+input.email {
+  text-transform: lowercase;
+}
+
 .authentication-form .material-icons-outlined {
   color: #0277bd;
 }

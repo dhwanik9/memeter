@@ -186,9 +186,9 @@ class Firebase {
     try {
       if(!uid) {
         const memes = await this.db.collection("posts").orderBy("uploadedAt", "desc").get();
-        memes.forEach(meme => {
+        for(const meme of memes.docs) {
           result.push(meme.data());
-        });
+        }
         return result
       } else {
         let posts = (await this.db.collection("users").doc(uid).get()).data();
@@ -261,6 +261,10 @@ class Firebase {
       });
 
       const post = (await this.db.collection("posts").doc(id).get()).data();
+      const ratingData = {
+        ratedBy: post.ratedBy,
+        totalRatings: post.totalRatings
+      };
 
       const user = (await this.db.collection("users").doc(uid).get()).data();
       await this.db.collection("users").doc(uid).update({
@@ -279,7 +283,7 @@ class Firebase {
         }
       });
 
-      return post;
+      return ratingData;
     } catch(err) {
       console.log(err);
     }
@@ -290,6 +294,7 @@ class Firebase {
       await this.db.collection("posts").doc(id).update({
         comments: firestore.FieldValue.arrayUnion(comment)
       });
+      return (await this.db.collection("posts").doc(id).get()).data().comments;
     } catch(err) {
       console.log(err);
     }
@@ -297,9 +302,17 @@ class Firebase {
 
   deleteComment = async (comment, id) => {
     try {
+      comment = {
+        comment: comment.comment,
+        commentedAt: comment.commentedAt,
+        id: comment.id,
+        uid: comment.uid,
+        displayName: comment.displayName
+      };
       await this.db.collection("posts").doc(id).update({
         comments: firestore.FieldValue.arrayRemove(comment)
       });
+      return (await this.db.collection("posts").doc(id).get()).data().comments;
     } catch (err) {
       console.log(err);
     }
